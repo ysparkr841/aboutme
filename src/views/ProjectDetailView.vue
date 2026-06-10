@@ -43,6 +43,11 @@
         <p>{{ project.solution }}</p>
       </section>
 
+      <section class="detail-section" v-if="project.diagram">
+        <h2 class="detail-section-title">아키텍처</h2>
+        <architecture-diagram />
+      </section>
+
       <section
         class="detail-section"
         v-if="project.features && project.features.length"
@@ -51,6 +56,14 @@
         <ul class="feature-list">
           <li v-for="f in project.features" :key="f">{{ f }}</li>
         </ul>
+      </section>
+
+      <section
+        class="detail-section"
+        v-if="project.images && project.images.length"
+      >
+        <h2 class="detail-section-title">화면</h2>
+        <screenshot-gallery :images="project.images" />
       </section>
 
       <section class="detail-section" v-if="project.result">
@@ -68,6 +81,9 @@
 </template>
 
 <script>
+import ScreenshotGallery from "@/components/ScreenshotGallery.vue";
+import ArchitectureDiagram from "@/components/ArchitectureDiagram.vue";
+
 const PROJECTS = {
   "geojson-tool": {
     name: "GeoJSON 편집 도구",
@@ -95,8 +111,91 @@ const PROJECTS = {
       "LocalStorage 상태 유지",
     ],
     result:
-      "고객사 및 내부 개발자가 직접 활용하며 반복 수정 업무가 감소했습니다.",
-    takeaway: "",
+      "기존에는 고객사가 그린 객체를 개발자가 QGIS에서 다시 그리며 좌표 오차와 재작업이 반복됐지만, 도입 후에는 같은 지도 환경에서 즉시 수정하고 GeoJSON으로 바로 내보냅니다. 좌표 오차로 인한 재작업이 사라졌고, 이제는 고객사와 내부 개발자 모두 별도 툴 없이 이 도구를 직접 씁니다.",
+    takeaway:
+      "현장에서 반복되던 불편을 직접 도구로 풀어본 작업이었습니다. 같은 지도 환경에서 객체와 좌표를 편집·표현하는 흐름을 설계하면서 지도 데이터를 다루는 감을 익혔고, 사용자가 지도에서 데이터를 직접 만지는 UX를 설계하는 일로 곧장 이어집니다.",
+    images: [
+      {
+        src: "/screenshots/editor.png",
+        alt: "GeoJSON 편집 도구 메인 편집 화면",
+        caption: "네이버 지도 위에서 객체를 직접 편집하는 화면",
+      },
+      {
+        src: "/screenshots/export.png",
+        alt: "GeoJSON Export 화면",
+        caption: "편집한 객체를 GeoJSON으로 Export",
+      },
+    ],
+    diagram: false,
+  },
+  "helpdesk-chatbot": {
+    name: "사내 헬프데스크 챗봇 PoC",
+    tags: ["검색 품질 개선", "Discovery"],
+    summary:
+      "사내 문서에서 정답을 찾아내는 검색(Discovery) 품질을 직접 개선한 헬프데스크 챗봇 PoC. Hybrid Search와 Reranker로 검색 정확도를 끌어올리고, 스트리밍 응답까지 직접 설계·구현했습니다.",
+    stack: [
+      "LangChain",
+      "LangGraph",
+      "Qdrant",
+      "Ollama(Gemma)",
+      "JSP",
+      "WebSocket",
+      "Docker",
+    ],
+    problem:
+      "사내 헬프데스크에는 시스템 사용법·장애 대응 같은 문의가 반복적으로 들어왔고, 담당자가 매번 직접 답했습니다. 핵심은 흩어진 사내 문서 더미에서 질문에 맞는 정답 문서를 정확히 찾아내는 일 — 검색(Discovery) 품질이었습니다. 처음에는 Chroma로 벡터 검색을 붙였는데, 정작 정답이 되어야 할 문서가 검색 결과 3~5위에 밀려 나오는 경우가 많았고, 그만큼 답변 정확도가 떨어졌습니다.",
+    solution:
+      "검색 품질, 특히 정답 문서의 순위를 끌어올리는 데 집중했습니다. 벡터 검색만으로는 순위가 불안정해, 의미 기반 검색(Dense)과 키워드 기반 검색(Sparse)을 함께 쓸 수 있는 Qdrant로 검색 엔진을 교체했습니다(기존 Chroma → Qdrant). Hybrid Search로 표현이 달라도 관련 문서를 놓치지 않게 하고, 여기에 Reranker를 더해 실제 관련성 높은 문서가 상위로 오도록 재정렬했습니다. 이 검색 결과를 LangGraph 워크플로우로 엮어 답변을 생성하고, LLM은 Ollama(Gemma)를 로컬에서 구동해 사내 데이터가 밖으로 나가지 않게 했습니다. 프론트엔드는 기존 사내 시스템(Java JSP)에 WebSocket을 연결해, 답변이 한 글자씩 출력되도록 스트리밍 응답을 구현했습니다.",
+    features: [
+      "LangGraph 기반 RAG 워크플로우 설계",
+      "검색 엔진을 Chroma 벡터 검색에서 Qdrant Hybrid Search로 교체 — 순위 안정화",
+      "Qdrant Hybrid Search — Dense(임베딩) + Sparse(BM25) 동시 검색",
+      "Reranker 적용으로 검색 결과 재정렬 및 정확도 향상",
+      "Ollama(Gemma) 로컬 LLM — 사내 데이터 외부 미전송",
+      "JSP + WebSocket 스트리밍 응답 — 타이핑 효과로 응답 체감 속도 개선",
+    ],
+    result:
+      "Chroma로 벡터 검색만 쓰던 초기 버전은 정작 정답 문서가 3~5위로 밀려 답변 정확도가 낮았지만, Qdrant Hybrid Search와 Reranker를 적용한 뒤에는 관련성 높은 문서가 안정적으로 상위에 올라왔습니다. 그 결과 담당자가 직접 답하지 않아도 사내 문서를 근거로 질문에 응답하는 형태를 만들어 사내에 보고할 수 있었습니다.",
+    takeaway:
+      "검색 품질이 결국 답의 품질을 가른다는 걸 직접 겪었습니다. 같은 데이터라도 검색 전략(Hybrid)과 재정렬(Reranker)에 따라 사용자가 받는 결과가 확 달라졌고, 그 결과를 어떻게 보여주느냐(스트리밍)도 체감을 바꿨습니다. 검색·추천 서비스의 결과 품질을 손보는 일과 바로 닿아 있습니다.",
+    images: [],
+    diagram: true,
+  },
+  "chartjs-plugin": {
+    name: "Chart.js 커스텀 플러그인",
+    tags: ["사내 공통", "확장 설계"],
+    summary:
+      "Chart.js 기본 차트로는 표현할 수 없는 반원·화살표·게이지·어노테이션 등을 그릴 수 있도록 설계한 사내 공통 커스텀 플러그인.",
+    stack: ["Vue.js", "Chart.js", "JavaScript"],
+    links: [],
+    problem:
+      "여러 공공 플랫폼의 대시보드를 만들다 보면 기획에서 요구하는 차트 형태가 Chart.js 기본 기능만으로는 표현되지 않는 경우가 잦았습니다. 반원(반도넛) 형태, 데이터 포인트의 증감을 보여주는 화살표, 게이지, 기준선·라벨 같은 어노테이션이 대표적이었고, 매 프로젝트마다 비슷한 한계를 따로 우회하는 일이 반복됐습니다.",
+    solution:
+      "필요할 때마다 임시로 우회하는 대신, Chart.js의 플러그인 구조를 활용해 부족한 표현을 직접 그리는 커스텀 플러그인으로 설계했습니다. 반원·화살표·게이지·어노테이션을 각각 플러그인으로 분리하고, 어느 프로젝트에서든 옵션만 넘기면 동작하도록 재사용 가능한 옵션 인터페이스를 함께 설계했습니다. 이 플러그인들은 사내 공통 자산으로 정리되고, 관리자 화면의 공통 기능으로도 추가됐습니다.",
+    features: [
+      "반원(반도넛) 차트 플러그인",
+      "데이터 포인트 화살표·증감 표시 플러그인",
+      "게이지 차트 플러그인",
+      "커스텀 어노테이션(기준선·라벨) 플러그인",
+      "여러 프로젝트에서 재사용 가능한 옵션 인터페이스 설계",
+    ],
+    result:
+      "이전에는 새 차트 요구가 들어올 때마다 프로젝트별로 비슷한 코드를 다시 짰지만, 공통 플러그인으로 정리한 뒤로는 옵션 설정만으로 같은 차트를 여러 서비스에 붙였습니다. 강남·수원·양천 등 여러 지자체 플랫폼의 대시보드가 같은 차트 기능을 공유했고, 관리자 화면의 공통 기능으로도 자리잡아 기획이 요구하는 비표준 차트에 빠르게 대응합니다.",
+    takeaway:
+      "반복되는 요구를 매번 임시로 막지 않고, 라이브러리의 확장 지점을 파고들어 재사용 가능한 공통 구조로 묶었습니다. 옵션 인터페이스를 어떻게 짜느냐에 따라 다른 개발자가 얼마나 쉽게 가져다 쓰는지가 갈렸고, 이게 곧 확장 가능한 UI 컴포넌트 설계로 이어집니다.",
+    images: [
+      {
+        src: "/screenshots/gauge.png",
+        alt: "게이지 차트 플러그인 화면",
+        caption: "커스텀 게이지 차트 플러그인 적용 예시",
+      },
+      {
+        src: "/screenshots/semicircle.png",
+        alt: "반원 차트 플러그인 화면",
+        caption: "반원(반도넛) 차트 플러그인 적용 예시",
+      },
+    ],
+    diagram: false,
   },
   "data-gangnam": {
     name: "데이터강남 플랫폼",
@@ -110,8 +209,10 @@ const PROJECTS = {
         internal: false,
       },
     ],
-    problem: "",
-    solution: "",
+    problem:
+      "데이터강남은 강남구의 여러 부서·기관에서 나오는 공공 데이터를 한 화면에서 보여줘야 하는 플랫폼이었습니다. 데이터 종류와 활용처가 제각각이라 요구사항이 계속 늘었고, 지도와 차트로 흩어진 데이터를 사용자가 직관적으로 탐색할 수 있게 만드는 것이 과제였습니다.",
+    solution:
+      "지도 위에서 데이터를 탐색하는 화면을 중심으로, 위치 데이터는 네이버 지도 시각화로, 지표 데이터는 Chart.js 차트로 표현했습니다. 서로 다른 요구가 들어와도 매번 새로 만들지 않도록 공통 컴포넌트와 사내 공통 차트 플러그인을 적용해 재사용 구조를 다졌고, Talend ETL로 데이터 적재를 지원하고 Jenkins로 배포를 관리하며 운영까지 직접 맡았습니다.",
     features: [
       "지도 기반 시각화 기능 개발",
       "Chart.js 커스텀 플러그인 구현",
@@ -120,59 +221,54 @@ const PROJECTS = {
       "Jenkins 배포 관리",
       "운영 및 장애 대응",
     ],
-    result: "",
-    takeaway: "",
+    result:
+      "장기간 주담당으로 참여하며, 새 데이터·새 요구가 들어와도 공통 구조 위에서 빠르게 화면을 추가할 수 있는 형태로 다듬었습니다. 단발성 구축에 그치지 않고 배포·장애 대응까지 운영을 책임지며, 흩어진 공공 데이터를 지도와 차트로 한곳에서 탐색하는 서비스를 안정적으로 유지했습니다.",
+    takeaway:
+      "여러 조직의 서로 다른 요구를 하나의 플랫폼 구조로 받아내는 일을 했습니다. 요구가 늘수록 공통 컴포넌트와 재사용 구조가 얼마나 중요한지 절감했고, 지도 위 데이터 탐색 UX를 다루는 동시에 운영까지 책임지며 서비스를 길게 끌고 가는 감을 익혔습니다.",
+    images: [
+      {
+        src: "/screenshots/dashboard.png",
+        alt: "데이터강남 대시보드 화면",
+        caption: "공공 데이터 통합 대시보드",
+      },
+      {
+        src: "/screenshots/map.png",
+        alt: "데이터강남 지도 시각화 화면",
+        caption: "지도 기반 데이터 시각화",
+      },
+    ],
+    diagram: false,
   },
   "ddm-situation": {
     name: "동대문구 빅데이터 상황시스템",
     tags: ["구축"],
     summary: "동대문구 도시현황 빅데이터 기반 종합상황시스템 구축 프로젝트.",
     stack: ["Vue.js", "Chart.js", "Webpack"],
-    problem: "",
-    solution: "",
+    problem:
+      "동대문구의 도시현황 데이터를 지도 위에 보여줘야 했는데, 한 지역에 위치 데이터가 많아 마커가 겹치는 상황이었습니다. 네이버 지도의 기본 클러스터링을 쓰면 간단했지만, 고객이 클러스터·마커의 모양과 정보 구성을 명확한 HTML 형태로 요구해서 기본 기능으로는 그 디자인을 맞출 수 없었습니다.",
+    solution:
+      "기본 클러스터링 대신, 겹치는 마커를 묶으면서 고객이 요구한 HTML 형태 그대로 렌더되는 커스텀 클러스터링을 직접 구현했습니다. 줌 레벨에 따라 밀집 지역이 정리돼 보이면서도, 클러스터·마커를 원하는 디자인의 HTML로 그릴 수 있게 했습니다. 반복되는 지도·차트 구성은 공통 컴포넌트로 분리해 여러 화면에서 재사용하도록 만들었고, Webpack 캐시 전략으로 반복 방문 시 로딩 부담을 줄였습니다.",
     features: [
       "도시현황 지도 화면 구축",
-      "커스텀 클러스터링 구현",
+      "HTML 커스텀 클러스터링 구현 (네이버 기본 클러스터링 대체)",
       "공통 컴포넌트 설계",
       "Webpack 캐시 전략 적용",
     ],
-    result: "",
-    takeaway: "",
-  },
-  "helpdesk-chatbot": {
-    name: "사내 헬프데스크 챗봇 PoC",
-    tags: ["PoC"],
-    summary:
-      "사내 헬프데스크 문의를 자동 응대하는 RAG 챗봇 PoC. LangGraph 워크플로우, Qdrant Hybrid Search, 스트리밍 응답까지 직접 설계·구현.",
-    stack: [
-      "LangChain",
-      "LangGraph",
-      "Qdrant",
-      "Ollama(Gemma)",
-      "JSP",
-      "WebSocket",
-      "Docker",
-    ],
-    problem:
-      "반복적인 사내 문의(시스템 사용법, 장애 대응 등)를 담당자가 직접 답변하는 비효율을 줄이고, 사내 문서 기반으로 정확히 응답하는 챗봇이 필요했다.",
-    solution:
-      "LangGraph로 RAG 파이프라인 워크플로우를 구성하고, 벡터 DB로 Qdrant를 Docker에 설치해 사용. Dense Search(의미 기반)와 Sparse Search(키워드 기반)를 동시에 수행하는 Hybrid Search로 검색 정확도를 높였으며, Reranker를 추가해 실제 관련성 높은 문서가 상위에 오도록 재정렬. LLM은 Ollama(Gemma)를 로컬 서버에 구동해 데이터 외부 유출 없이 운영. 프론트엔드는 기존 사내 시스템(Java JSP)에 WebSocket을 연결해 스트리밍 응답을 구현, 한 글자씩 타이핑되는 방식으로 체감 응답 속도를 개선.",
-    features: [
-      "LangGraph 기반 RAG 워크플로우 설계",
-      "Qdrant Hybrid Search — Dense(임베딩) + Sparse(BM25) 동시 검색",
-      "Reranker 적용으로 검색 결과 재정렬 및 정확도 향상",
-      "Ollama(Gemma) 로컬 LLM — 사내 데이터 외부 미전송",
-      "JSP + WebSocket 스트리밍 응답 — 타이핑 효과로 응답 체감 속도 개선",
-    ],
     result:
-      "담당자 없이 사내 문서 기반으로 질문에 응답하는 챗봇을 사내 보고. Hybrid Search + Reranker 조합이 단순 벡터 검색 대비 응답 관련성이 높아짐을 확인.",
+      "네이버 기본 클러스터링으로는 맞출 수 없던 고객 요구 디자인을, 커스텀 클러스터링으로 HTML 형태 그대로 구현해 충족했습니다. 또한 지도·차트 구성을 최대한 공통 컴포넌트로 분리한 덕분에, 도시현황 메인 화면뿐 아니라 빅데이터 분석 화면에서도 같은 컴포넌트를 그대로 재사용했습니다. 화면마다 비슷한 UI를 다시 만들지 않고 빠르게 확장할 수 있었습니다.",
     takeaway:
-      "RAG 파이프라인 전 구간(청킹·임베딩·검색·재정렬·생성)을 직접 구현하며 각 단계가 품질에 미치는 영향을 체감. 스트리밍 응답이 UX에 미치는 효과도 확인.",
+      "지도에 많은 데이터를 얹을 때, 라이브러리 기본 기능만 믿지 않고 요구된 형태를 직접 그려야 하는 순간이 있다는 걸 배웠습니다. 기본 클러스터링의 한계는 커스텀 구현으로 넘고, 공통 컴포넌트와 로딩 최적화까지 함께 챙기며 지도 화면을 확장 가능하게 다뤘습니다.",
+    images: [],
+    diagram: false,
   },
 };
 
 export default {
   name: "ProjectDetailView",
+  components: {
+    ScreenshotGallery,
+    ArchitectureDiagram,
+  },
   computed: {
     project() {
       return PROJECTS[this.$route.params.id] || null;
@@ -185,45 +281,52 @@ export default {
 .back-link
     display inline-block
     font-size 13px
-    color #999
+    color var(--color-text-muted)
     margin-bottom 40px
     transition color 0.15s
 
     &:hover
-        color #1a1a1a
+        color var(--color-accent)
 
 .detail-header
     padding-bottom 40px
-    border-bottom 1px solid #f0f0f0
+    border-bottom 1px solid var(--color-border)
     margin-bottom 48px
 
 .detail-tags
     display flex
     gap 8px
-    margin-bottom 12px
+    flex-wrap wrap
+    margin-bottom 14px
 
 .project-tag
-    font-size 11px
-    color #888
-    border 1px solid #e0e0e0
-    padding 1px 7px
-    border-radius 10px
+    font-size 12px
+    font-weight 500
+    color var(--color-accent)
+    background var(--color-accent-light)
+    border 1px solid var(--color-accent-border)
+    padding 3px 10px
+    border-radius 99px
 
 .detail-title
-    font-size 28px
+    font-size 32px
     font-weight 700
-    margin-bottom 12px
+    letter-spacing -0.02em
+    line-height 1.2
+    color var(--color-text)
+    margin-bottom 14px
 
 .detail-summary
-    font-size 15px
-    color #555
+    font-size 16px
+    color var(--color-text-secondary)
     line-height 1.8
     margin-bottom 16px
+    max-width 600px
 
 .detail-stack
     font-size 13px
-    color #999
-    margin-bottom 16px
+    color var(--color-text-muted)
+    margin-bottom 20px
 
 .detail-links
     display flex
@@ -233,17 +336,18 @@ export default {
 .detail-link
     display inline-flex
     align-items center
-    padding 7px 14px
+    padding 9px 16px
     font-size 13px
     font-weight 500
-    border-radius 6px
+    border-radius var(--radius-btn)
     background var(--color-accent-light)
     color var(--color-accent)
-    border 1px solid rgba(86, 69, 212, 0.2)
+    border 1px solid var(--color-accent-border)
     transition background 0.12s
 
     &:hover
-        background rgba(86, 69, 212, 0.15)
+        background var(--color-accent-border)
+        color var(--color-accent-hover)
 
     &--external
         background var(--color-bg-subtle)
@@ -251,44 +355,56 @@ export default {
         border-color var(--color-border)
 
         &:hover
-            background var(--color-bg-subtle)
+            background var(--color-bg-soft)
             color var(--color-text)
 
 .detail-section
-    margin-bottom 48px
+    margin-bottom 56px
 
     p
         font-size 15px
-        color #444
-        line-height 1.8
+        color var(--color-text-secondary)
+        line-height 1.85
 
 .detail-section-title
-    font-size 13px
+    font-size 12px
     font-weight 600
     text-transform uppercase
-    letter-spacing 0.08em
-    color #999
-    margin-bottom 16px
+    letter-spacing 0.1em
+    color var(--color-text-muted)
+    margin-bottom 18px
 
 .feature-list
     list-style none
     display flex
     flex-direction column
-    gap 8px
+    gap 10px
 
     li
-        font-size 14px
-        color #444
-        padding-left 16px
+        font-size 15px
+        color var(--color-text-secondary)
+        line-height 1.6
+        padding-left 18px
         position relative
 
         &::before
-            content "—"
+            content ""
             position absolute
             left 0
-            color #ccc
+            top 9px
+            width 5px
+            height 5px
+            border-radius 50%
+            background var(--color-accent)
 
 .not-found
-    color #999
+    color var(--color-text-muted)
     font-size 14px
+
+@media (max-width 640px)
+    .detail-title
+        font-size 26px
+
+    .detail-section
+        margin-bottom 44px
 </style>

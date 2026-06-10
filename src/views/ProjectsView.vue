@@ -96,19 +96,47 @@ export default {
           id: "geojson-tool",
           name: "GeoJSON 편집 도구",
           icon: "🗺",
-          color: "#eef2ff",
+          color: "var(--color-accent-light)",
           tags: [
-            { label: "문제 해결", type: "purple" },
+            { label: "문제 해결", type: "orange" },
             { label: "사내 도구", type: "gray" },
           ],
           desc: "고객사·내부 개발자의 좌표 오차 문제를 해결하기 위해 직접 개발한 네이버 지도 기반 업무 지원 웹 도구.",
           stack: ["Vue.js", "Naver Maps", "GeoJSON"],
         },
         {
+          id: "helpdesk-chatbot",
+          name: "사내 헬프데스크 챗봇 PoC",
+          icon: "💬",
+          color: "var(--color-accent-light)",
+          tags: [{ label: "PoC", type: "orange" }],
+          desc: "사내 문서에서 정답을 찾아내는 검색 품질을 직접 개선한 RAG 챗봇. Qdrant Hybrid Search와 Reranker로 정확도를 높이고, JSP WebSocket으로 스트리밍 응답을 구현했습니다.",
+          stack: [
+            "LangChain",
+            "LangGraph",
+            "Qdrant",
+            "Ollama",
+            "JSP",
+            "WebSocket",
+          ],
+        },
+        {
+          id: "chartjs-plugin",
+          name: "Chart.js 커스텀 플러그인",
+          icon: "🧩",
+          color: "var(--color-accent-light)",
+          tags: [
+            { label: "사내 공통", type: "orange" },
+            { label: "확장 설계", type: "gray" },
+          ],
+          desc: "기본 차트로 표현할 수 없는 반원·화살표·게이지·어노테이션을 그릴 수 있도록 설계한 사내 공통 Chart.js 커스텀 플러그인.",
+          stack: ["Vue.js", "Chart.js", "JavaScript"],
+        },
+        {
           id: "data-gangnam",
           name: "데이터강남 플랫폼",
           icon: "🌆",
-          color: "#f0fdf4",
+          color: "var(--color-bg-subtle)",
           tags: [
             { label: "운영", type: "green" },
             { label: "고도화", type: "gray" },
@@ -120,26 +148,10 @@ export default {
           id: "ddm-situation",
           name: "동대문구 빅데이터 상황시스템",
           icon: "🏙",
-          color: "#eff6ff",
+          color: "var(--color-bg-subtle)",
           tags: [{ label: "구축", type: "blue" }],
           desc: "도시현황 지도 화면 구축, 커스텀 클러스터링 구현, 공통 컴포넌트 설계.",
           stack: ["Vue.js", "Chart.js", "Webpack"],
-        },
-        {
-          id: "helpdesk-chatbot",
-          name: "사내 헬프데스크 챗봇 PoC",
-          icon: "💬",
-          color: "#fff7ed",
-          tags: [{ label: "PoC", type: "orange" }],
-          desc: "LangGraph 워크플로우 + Qdrant Hybrid Search(Dense+Sparse) + Reranker 기반 RAG 파이프라인. JSP WebSocket으로 스트리밍 응답 구현.",
-          stack: [
-            "LangChain",
-            "LangGraph",
-            "Qdrant",
-            "Ollama",
-            "JSP",
-            "WebSocket",
-          ],
         },
       ],
       additional: [
@@ -185,9 +197,9 @@ export default {
     margin-bottom 36px
 
 .page-title
-    font-size 22px
+    font-size 28px
     font-weight 700
-    letter-spacing -0.01em
+    letter-spacing -0.02em
     color var(--color-text)
     margin-bottom 16px
 
@@ -236,7 +248,7 @@ export default {
 .project-grid
     display grid
     grid-template-columns repeat(2, 1fr)
-    gap 16px
+    gap 18px
 
 .project-card
     display flex
@@ -260,9 +272,9 @@ export default {
     margin-bottom 16px
 
 .card-icon
-    width 40px
-    height 40px
-    border-radius 10px
+    width 44px
+    height 44px
+    border-radius var(--radius-btn)
     display flex
     align-items center
     justify-content center
@@ -277,43 +289,39 @@ export default {
 .tag
     font-size 11px
     font-weight 500
-    padding 2px 8px
-    border-radius 4px
-
-    &--purple
-        background #eef2ff
-        color #5645d4
-
-    &--green
-        background #f0fdf4
-        color #166534
-
-    &--blue
-        background #eff6ff
-        color #1d4ed8
+    padding 3px 9px
+    border-radius var(--radius-tag)
 
     &--orange
-        background #fff7ed
-        color #c2410c
+        background var(--color-accent-light)
+        color var(--color-accent)
+
+    &--green
+        background rgba(34, 153, 84, 0.1)
+        color #1f8a4c
+
+    &--blue
+        background rgba(45, 110, 215, 0.1)
+        color #2767c9
 
     &--gray
         background var(--color-bg-subtle)
         color var(--color-text-muted)
 
     &--build
-        background #eff6ff
-        color #1d4ed8
+        background rgba(45, 110, 215, 0.1)
+        color #2767c9
 
     &--ops
-        background #f0fdf4
-        color #166534
+        background rgba(34, 153, 84, 0.1)
+        color #1f8a4c
 
     &--both
-        background #f5f3ff
-        color #5645d4
+        background var(--color-accent-light)
+        color var(--color-accent)
 
 .card-name
-    font-size 15px
+    font-size 16px
     font-weight 600
     color var(--color-text)
     margin-bottom 8px
@@ -323,7 +331,7 @@ export default {
 .card-desc
     font-size 13px
     color var(--color-text-secondary)
-    line-height 1.65
+    line-height 1.7
     flex 1
     margin-bottom 20px
 
@@ -390,4 +398,40 @@ export default {
 .additional-name
     font-size 14px
     color var(--color-text-secondary)
+
+.additional-tag
+    flex-shrink 0
+    font-size 11px
+    font-weight 600
+    padding 3px 10px
+    border-radius 999px
+    letter-spacing 0.02em
+    line-height 1.5
+    white-space nowrap
+    border 1px solid transparent
+
+    &.tag--build
+        background rgba(45, 110, 215, 0.08)
+        color #2767c9
+        border-color rgba(45, 110, 215, 0.18)
+
+    &.tag--ops
+        background rgba(34, 153, 84, 0.08)
+        color #1f8a4c
+        border-color rgba(34, 153, 84, 0.18)
+
+    &.tag--both
+        background var(--color-accent-light)
+        color var(--color-accent)
+        border-color var(--color-accent-border)
+
+@media (max-width 640px)
+    .page-title
+        font-size 24px
+
+    .project-grid
+        grid-template-columns 1fr
+
+    .stats-row
+        width 100%
 </style>

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>박의수 · Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" as="style" crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <% if (process.env.VUE_APP_NCP_CLIENT_ID) { %>
     <script type="text/javascript" src="//oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=<%= process.env.VUE_APP_NCP_CLIENT_ID %>&submodules=drawing"></script>
     <% } %>

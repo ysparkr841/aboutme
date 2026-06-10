@@ -23,21 +23,23 @@ export default {
 
 <style lang="stylus">
 :root
-    --color-text #37352f
-    --color-text-secondary #5d5b54
-    --color-text-muted #787671
-    --color-text-placeholder #bbb8b1
+    --color-text #212124
+    --color-text-secondary #4d5159
+    --color-text-muted #868b94
+    --color-text-placeholder #adb1ba
     --color-bg #ffffff
-    --color-bg-subtle #f6f5f4
-    --color-bg-soft #fafaf9
-    --color-border #e5e3df
-    --color-accent #5645d4
-    --color-accent-light rgba(86, 69, 212, 0.08)
-    --shadow-card rgba(15, 15, 15, 0.08) 0px 4px 12px 0px
-    --shadow-elevated rgba(15, 15, 15, 0.20) 0px 8px 24px -4px
-    --radius-card 12px
-    --radius-btn 8px
-    --radius-tag 4px
+    --color-bg-subtle #f7f8f9
+    --color-bg-soft #fafbfc
+    --color-border #eaebee
+    --color-accent #ff6f0f
+    --color-accent-hover #e55f00
+    --color-accent-light rgba(255, 111, 15, 0.08)
+    --color-accent-border rgba(255, 111, 15, 0.22)
+    --shadow-card rgba(0, 0, 0, 0.06) 0px 2px 8px 0px
+    --shadow-elevated rgba(0, 0, 0, 0.12) 0px 8px 24px -4px
+    --radius-card 16px
+    --radius-btn 10px
+    --radius-tag 6px
 
 *
     box-sizing border-box
@@ -45,11 +47,11 @@ export default {
     padding 0
 
 body
-    font-family "Inter", -apple-system, BlinkMacSystemFont, sans-serif
+    font-family "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", sans-serif
     font-size 16px
     color var(--color-text)
     background var(--color-bg)
-    line-height 1.55
+    line-height 1.65
     -webkit-font-smoothing antialiased
 
 a
@@ -91,13 +93,13 @@ a
         transition background 0.12s, color 0.12s
 
         &:hover
-            background var(--color-bg-subtle)
-            color var(--color-text)
+            background var(--color-accent-light)
+            color var(--color-accent)
 
         &.router-link-exact-active
-            background var(--color-bg-subtle)
-            color var(--color-text)
-            font-weight 500
+            background var(--color-accent-light)
+            color var(--color-accent)
+            font-weight 600
 
 .main
     max-width 760px
