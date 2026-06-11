@@ -133,6 +133,18 @@ export default {
           stack: ["Vue.js", "Chart.js", "JavaScript"],
         },
         {
+          id: "search-playground",
+          name: "로컬 검색 탐색 플레이그라운드",
+          icon: "🔍",
+          color: "var(--color-accent-light)",
+          tags: [
+            { label: "Search & Discovery", type: "orange" },
+            { label: "개인 프로젝트", type: "gray" },
+          ],
+          desc: "검색·정렬·필터·최근 검색어·즐겨찾기를 직접 구현하며 '원하는 정보에 더 빨리 닿는' 탐색 흐름을 실험한 React + TypeScript 프로젝트.",
+          stack: ["React 19", "TypeScript", "TanStack Query", "Vite"],
+        },
+        {
           id: "data-gangnam",
           name: "데이터강남 플랫폼",
           icon: "🌆",

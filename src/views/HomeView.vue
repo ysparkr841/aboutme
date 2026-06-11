@@ -66,7 +66,9 @@ export default {
           label: "Frontend",
           chips: [
             "Vue.js",
+            "React",
             "JavaScript",
+            "TypeScript",
             "Chart.js",
             "D3.js",
             "Naver Maps API",
