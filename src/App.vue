@@ -5,6 +5,7 @@
         <router-link to="/" class="nav-logo">홈</router-link>
         <div class="nav-links">
           <router-link to="/projects">Projects</router-link>
+          <router-link to="/now">Now</router-link>
           <router-link to="/contact">Contact</router-link>
         </div>
       </nav>
